@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Wagento_Cart>
+            <active>true</active>
+            <codePool>local</codePool>
+            <depends>
+                <Mage_Core/>
+                <Mage_Customer/>
+                <Mage_Checkout/>
+            </depends>
+        </Wagento_Cart>
+    </modules>
+</config> 

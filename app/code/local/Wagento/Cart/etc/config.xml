@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Wagento_Cart>
+            <version>0.1.0</version>
+        </Wagento_Cart>
+    </modules>
+    <global>
+        <events>
+            <checkout_cart_product_add_after>
+				<observers>
+                    <checkout_cart_product_add_after>
+						<type>singleton</type>
+                        <class>Wagento_Cart_Model_Observer</class>
+                        <method>hookCheckoutCartProductAddAfter</method>
+                    </checkout_cart_product_add_after>
+                </observers>
+			</checkout_cart_product_add_after>
+        </events>
+        <helpers>
+            <wagentocart>
+                <class>Wagento_Cart_Helper</class>
+            </wagentocart>
+        </helpers>
+
+        <models>
+            <wagentocart>
+                <class>Wagento_Cart_Model</class>
+            </wagentocart>
+        </models>
+		
+        <blocks>
+            <wagentocart>
+                <class>Wagento_Cart_Block</class>
+            </wagentocart>
+			<checkout>			
+				<rewrite>
+					<cart_totals>Wagento_Cart_Block_Cart_Totals</cart_totals>
+				</rewrite>
+			</checkout>
+        </blocks>
+		<resources>
+            <wagentocart_setup>
+                <setup>
+                    <module>Wagento_Cart</module>
+                    <class>Mage_Catalog_Model_Resource_Eav_Mysql4_Setup</class>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </wagentocart_setup>
+			<wagentocart_write>
+				<connection>
+					<use>core_write</use>
+				</connection>
+			</wagentocart_write>
+			<!-- db read connection -->
+			<wagentocart_read>
+				<connection>
+					<use>core_read</use>
+				</connection>
+			</wagentocart_read>
+		</resources>
+    </global>
+	
+	<default>
+        <carriers>
+            <!-- Use group alias -->
+            <wagento_shipping>
+                <active>1</active>
+                <!-- Use method name -->
+                <allowed_methods>pickup</allowed_methods>
+                <!-- Use method name -->
+                <methods>wagento</methods>
+                <sallowspecific>0</sallowspecific>
+                <!-- Use module name_Shipping_Model_Carrier_class name -->
+                <model>Wagento_Cart_Model_Carrier_ShippingProduct</model>
+                <name>Wagento Shipping Method</name>
+                <title>Store Pickup</title>
+                <specificerrmsg>
+                    This shipping method is currently unavailable.
+                    If you would like to ship using this shipping
+                    method, please contact us.
+                </specificerrmsg>
+                <handling_type>F</handling_type>
+            <!-- Use group alias -->
+            </wagento_shipping>
+        </carriers>
+    </default>
+</config>
