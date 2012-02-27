@@ -8,7 +8,7 @@ class Wagento_Cart_Helper_Data extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig( self::XML_PATH_ENABLED );
     }
 	
-	public function getPriceServiceUrl($itemNumber,$accountNumber,$orderamount,$postalcode,$pricecode=10){
+	public function getPriceServiceUrl($itemNumber,$accountNumber,$orderamount=0,$postalcode=99999,$pricecode=10){
 
         $url =  Mage::getStoreConfig('wagentocart/general/service_url');
         $url.= '/getprice.pgm?itemnumber='.$itemNumber;
