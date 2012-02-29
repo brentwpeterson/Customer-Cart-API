@@ -13,7 +13,7 @@ class Wagento_Cart_Model_Carrier_ShippingProduct extends Mage_Shipping_Model_Car
     public function collectRates(Mage_Shipping_Model_Rate_Request $request)
     {
         // skip if not enabled
-        if (!Mage::getStoreConfig('carriers/'.$this->_code.'/active'))
+        if (!$this->isActive() || !Mage::helper('wagentocart')->isEnabled())
             return false;
 
         $result = Mage::getModel('shipping/rate_result');
@@ -27,7 +27,7 @@ class Wagento_Cart_Model_Carrier_ShippingProduct extends Mage_Shipping_Model_Car
         $method->setCarrier($this->_code);
         $method->setCarrierTitle(Mage::getStoreConfig('carriers/'.$this->_code.'/title'));
         /* Use method name */
-        $method->setMethod('pickup');
+        $method->setMethod('wagento_shipping');
         $method->setMethodTitle(Mage::getStoreConfig('carriers/'.$this->_code.'/methodtitle'));
 		
 		$shippingFee = $this->getShippingFee();
@@ -40,14 +40,19 @@ class Wagento_Cart_Model_Carrier_ShippingProduct extends Mage_Shipping_Model_Car
 	
 	public function getShippingFee(){
 		$cart = Mage::helper('checkout/cart')->getCart()->getQuote();
-		//echo (get_class($cart));die;
 		$shippingFee = 0;
 		foreach ($cart->getAllItems() as $item) {
-			$shippingItem = $item->getData('wagento_shipping_fee');
-			//var_dump($shippingItem);
-			$shippingFee += $shippingItem;
+			$shippingItem = 0;
+			if($item->getData('wagento_shipping_fee') !=''){
+				$shippingItem = $item->getData('wagento_shipping_fee');
+			}
+			else{
+				$shippingItem = Mage::helper('wagentocart')->getDefaultShippingAmountProduct();
+				$item->setData('wagento_shipping_fee',$shippingItem);
+				$item->save();
+			}
+			$shippingFee += $shippingItem * intval($item->getQty());
 		}
-		//die($shippingFee);
 		return $shippingFee;
 	}
 }

@@ -16,6 +16,56 @@
                     </checkout_cart_product_add_after>
                 </observers>
 			</checkout_cart_product_add_after>
+			
+			<checkout_cart_update_items_after>
+                <observers>
+                    <checkout_cart_update_items_after>
+                        <type>singleton</type>
+                        <class>Wagento_Cart_Model_Observer</class>
+                        <method>hookCheckoutCartUpdateItemsAfter</method>
+                    </checkout_cart_update_items_after>
+                </observers>
+            </checkout_cart_update_items_after>
+
+			<checkout_submit_all_after>
+                <observers>
+                    <checkout_submit_all_after>
+                        <type>singleton</type>
+                        <class>Wagento_Cart_Model_Observer</class>
+                        <method>hookCheckoutSubmitAllAfter</method>
+                    </checkout_submit_all_after>
+                </observers>
+            </checkout_submit_all_after>
+			<checkout_onepage_save_billing_after>
+				<observers>
+				  <checkout_onepage_save_billing_after>
+					<type>singleton</type>
+					<class>Wagento_Cart_Model_Observer</class>
+					<method>calculateShippingAndTax</method>
+				  </checkout_onepage_save_billing_after>
+				</observers>
+			</checkout_onepage_save_billing_after>
+			<checkout_onepage_save_shipping_after>
+				<observers>
+				  <checkout_onepage_save_shipping_after>
+					<type>singleton</type>
+					<class>Wagento_Cart_Model_Observer</class>
+					<method>calculateShippingAndTax</method>
+				  </checkout_onepage_save_shipping_after>
+				</observers>
+			</checkout_onepage_save_shipping_after>
+			
+			
+			<catalog_product_get_final_price>
+				<observers>
+                    <catalog_product_get_final_price>
+						<type>singleton</type>
+                        <class>Wagento_Cart_Model_Observer</class>
+                        <method>hookProductGetFinalPrice</method>
+                    </catalog_product_get_final_price>
+                </observers>
+			</catalog_product_get_final_price>
+			
         </events>
         <helpers>
             <wagentocart>
@@ -27,12 +77,30 @@
             <wagentocart>
                 <class>Wagento_Cart_Model</class>
             </wagentocart>
+			<checkout>
+				<rewrite>
+					<type_onepage>Wagento_Cart_Model_Override_Checkout_Type_Onepage</type_onepage>
+				</rewrite>
+			</checkout>
+			<tax>
+				<rewrite>
+					<calculation>Wagento_Cart_Model_Override_Tax_Calculation</calculation>
+				</rewrite>
+			</tax>
+			<!--
+			<catalog>
+				<rewrite>
+					<product_type_price>Wagento_Cart_Model_Override_Product_Type_Price</product_type_price>
+				</rewrite>
+			</catalog>
+			-->
         </models>
 		
         <blocks>
             <wagentocart>
                 <class>Wagento_Cart_Block</class>
             </wagentocart>
+			
 			<checkout>			
 				<rewrite>
 					<cart_totals>Wagento_Cart_Block_Cart_Totals</cart_totals>
@@ -82,9 +150,16 @@
                     If you would like to ship using this shipping
                     method, please contact us.
                 </specificerrmsg>
-                <handling_type>F</handling_type>
+                <default_shipping_product_fee>10</default_shipping_product_fee>
             <!-- Use group alias -->
             </wagento_shipping>
         </carriers>
+		<wagentocart>
+			<general>
+				<enable>1</enable>
+				<service_url>http://info.emcp.com:8153</service_url>
+				<default_postcode>00544</default_postcode>
+			</general>
+		</wagentocart>
     </default>
 </config>

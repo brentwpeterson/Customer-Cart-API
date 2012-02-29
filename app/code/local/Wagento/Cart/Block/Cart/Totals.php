@@ -3,27 +3,47 @@ class Wagento_Cart_Block_Cart_Totals extends Mage_Checkout_Block_Cart_Totals
 {
 	public function renderTotals($area = null, $colspan = 1)
 	{
-		$html = '';
+		if(Mage::helper('wagentocart')->isEnabled()){
+			$html = '';
 
-		$display_count = 0;
+			$display_count = 0;
+			$taxAmount = Mage::helper('wagentocart')->getWagentoTaxAmount();
 		
-		//print_r($this->getTotals());
-		foreach($this->getTotals() as $total) {
-			if ($total->getArea() != $area && $area != -1) {
-				continue;
-			}
+			$taxTotal= new Varien_Object(array(
+					'code'  => 'wagento_tax_fee',
+					'value' => $taxAmount,
+					'title'	=> 'Tax'
+			));
 			
-			// Add Sales Tax line
-			if ($total->getCode() == "tax") {
-					$total->setTitle('Sales Tax');
-					$total->setValue(50);
-					$html .= $this->renderTotal($total, $area, $colspan);
-
-			} else {
-				$html .= $this->renderTotal($total, $area, $colspan);
-				//$html .= $total->getCode();
+			foreach($this->getTotals() as $total) {
+				if ($total->getArea() != $area && $area != -1) {
+					continue;
+				}
+				
+				switch($total->getCode()){
+					case 'tax': 
+						break;
+					case 'grand_total':
+							if($display_count ==0){
+								$grandTotal = $total->getValue()+$taxAmount;
+								$total->setValue($grandTotal);
+							}
+							
+							$html .= $this->renderTotal($total, $area, $colspan);
+							$display_count++;
+						break;
+					default:
+							$html .= $this->renderTotal($total, $area, $colspan);
+						break;
+				}
 			}
+			if($taxAmount > 0){
+				$html .= $this->renderTotal($taxTotal, $area, $colspan);
+			}
+			return $html;
 		}
-		return $html;
+		else{
+			return parent::renderTotals($area,$colspan);
+		}
 	}
 }
