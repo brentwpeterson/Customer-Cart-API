@@ -47,7 +47,7 @@ class Wagento_Cart_Model_Carrier_ShippingProduct extends Mage_Shipping_Model_Car
 				$shippingItem = $item->getData('wagento_shipping_fee');
 			}
 			else{
-				$shippingItem = Mage::helper('wagentocart')->getDefaultShippingAmountProduct();
+				$shippingItem = Mage::helper('wagentocart')->getDefaultShippingProductFee();
 				$item->setData('wagento_shipping_fee',$shippingItem);
 				$item->save();
 			}

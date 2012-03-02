@@ -103,12 +103,13 @@ class Wagento_Cart_Helper_Data extends Mage_Core_Helper_Abstract
 				'tax_rate' => floatval(trim($data[2])),
 				'tax_amount' => floatval(trim($data[3])),
 				'price' => floatval(trim($data[4])),
-				'taxable_amount' => floatval(trim($data[5])),
-				'none_taxable_amount' => floatval(trim($data[6])),
+				'shipping_fee' => floatval(trim($data[5])),
+				'taxable_amount' => floatval(trim($data[6])),
+				//'none_taxable_amount' => floatval(trim($data[6])),
 				'freight_zone_found' => trim($data2[0]),
 				'post_code' => trim($data2[1]),
 				'status' => trim($data2[2]),
-				'shipping_fee' => $this->getDefaultShippingProductFee() // implement later
+				 // implement later
 			);
 			
 			$this->log('webservice response',$result);
