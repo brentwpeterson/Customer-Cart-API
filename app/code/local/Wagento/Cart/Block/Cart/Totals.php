@@ -14,7 +14,7 @@ class Wagento_Cart_Block_Cart_Totals extends Mage_Checkout_Block_Cart_Totals
 					'value' => $taxAmount,
 					'title'	=> 'Tax'
 			));
-			
+			$isGrandTotal = false;
 			foreach($this->getTotals() as $total) {
 				if ($total->getArea() != $area && $area != -1) {
 					continue;
@@ -31,13 +31,14 @@ class Wagento_Cart_Block_Cart_Totals extends Mage_Checkout_Block_Cart_Totals
 							
 							$html .= $this->renderTotal($total, $area, $colspan);
 							$display_count++;
+							$isGrandTotal = true;
 						break;
 					default:
 							$html .= $this->renderTotal($total, $area, $colspan);
 						break;
 				}
 			}
-			if($taxAmount > 0){
+			if($taxAmount > 0 AND !$isGrandTotal){
 				$html .= $this->renderTotal($taxTotal, $area, $colspan);
 			}
 			return $html;

@@ -18,10 +18,14 @@ class Wagento_Cart_Model_Override_Tax_Calculation  extends Mage_Tax_Model_Calcul
 					$this->unsRateValue();
 					$this->unsCalculationProcess();
 					$this->unsEventModuleId();
-					$this->setCalculationProcess('wagento_tax');
-					$taxRate = 0;
-					$this->setRateValue($taxRate);
-					
+					Mage::dispatchEvent('tax_rate_data_fetch', array('request'=>$request));
+					if (!$this->hasRateValue()) {
+						$rateInfo = $this->_getResource()->getRateInfo($request);
+						$this->setCalculationProcess($rateInfo['process']);
+						$this->setRateValue(0);
+					} else {
+						$this->setCalculationProcess($this->_formCalculationProcess());
+					}
 					$this->_rateCache[$cacheKey] = $this->getRateValue();
 					$this->_rateCalculationProcess[$cacheKey] = $this->getCalculationProcess();
 				}
