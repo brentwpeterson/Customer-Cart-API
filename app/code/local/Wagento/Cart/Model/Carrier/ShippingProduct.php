@@ -51,7 +51,7 @@ class Wagento_Cart_Model_Carrier_ShippingProduct extends Mage_Shipping_Model_Car
 				$item->setData('wagento_shipping_fee',$shippingItem);
 				$item->save();
 			}
-			$shippingFee += $shippingItem * intval($item->getQty());
+			$shippingFee += $shippingItem;
 		}
 		return $shippingFee;
 	}

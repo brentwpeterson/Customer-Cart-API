@@ -16,7 +16,6 @@
                     </checkout_cart_product_add_after>
                 </observers>
 			</checkout_cart_product_add_after>
-			<!--
 			<checkout_cart_update_items_after>
                 <observers>
                     <checkout_cart_update_items_after>
@@ -26,7 +25,6 @@
                     </checkout_cart_update_items_after>
                 </observers>
             </checkout_cart_update_items_after>
-			-->
 
 			<checkout_submit_all_after>
                 <observers>

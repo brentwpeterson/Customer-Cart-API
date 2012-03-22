@@ -5,14 +5,16 @@ class Wagento_Cart_Model_Observer extends Mage_Core_Model_Abstract
 		
 		if(Mage::helper('wagentocart')->isEnabled()){
 			$quoteItem = $observer->getQuoteItem();
-			$data = Mage::helper('wagentocart')->parserData($quoteItem->getProduct());
+			$qty = intval($quoteItem->getQty());
+			$data = Mage::helper('wagentocart')->parserData($quoteItem->getProduct(),$qty);
 			if(!empty($data)){
-				$price = $data['price'];
+				$price = $data['price']/$qty;
 				$quoteItem->setData('wagento_is_loaded',1);
 				$quoteItem->setCustomPrice($price);
 				$quoteItem->setOriginalCustomPrice($price);
 				$quoteItem->setData('wagento_tax_fee',$data['tax_rate']);
 				$quoteItem->setData('wagento_shipping_fee',$data['shipping_fee']);
+				
 			}
 			else{
 				$defaultShippingFee = Mage::helper('wagentocart')->getDefaultShippingProductFee();
@@ -23,6 +25,10 @@ class Wagento_Cart_Model_Observer extends Mage_Core_Model_Abstract
 		}
 		return $this;
     }
+	
+	public function hookCheckoutCartUpdateItemsAfter(){
+		$this->calculateShippingAndTax();
+	}
 	
 	public function hookCheckoutSubmitAllAfter($observer){
 		if(Mage::helper('wagentocart')->isEnabled()){
@@ -53,9 +59,10 @@ class Wagento_Cart_Model_Observer extends Mage_Core_Model_Abstract
 			$cart = Mage::getSingleton('checkout/cart');
 
 			foreach ($cart->getQuote()->getAllItems() as $quoteItem) {
-				$data = Mage::helper('wagentocart')->parserData($quoteItem->getProduct());
+				$qty = intval($quoteItem->getQty());
+				$data = Mage::helper('wagentocart')->parserData($quoteItem->getProduct(),$qty);
 				if(!empty($data)){
-					$price = $data['price'];
+					$price = $data['price']/$qty;
 					$quoteItem->setData('wagento_is_loaded',1);
 					$quoteItem->setCustomPrice($price);
 					$quoteItem->setOriginalCustomPrice($price);

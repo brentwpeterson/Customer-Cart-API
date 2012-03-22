@@ -8,8 +8,8 @@ class Wagento_Cart_Helper_Data extends Mage_Core_Helper_Abstract
         return Mage::getStoreConfig('wagentocart/general/enable');
     }
 	
-	public function getPriceServiceUrl($itemNumber,$accountNumber,$postalCode){
-		return  Mage::getStoreConfig('wagentocart/general/service_url').'/getprice.pgm?itemnumber='.$itemNumber.'&accountnumber='.$accountNumber.'&postalcode='.$postalCode;
+	public function getPriceServiceUrl($itemNumber,$accountNumber,$postalCode,$qty){
+		return  Mage::getStoreConfig('wagentocart/general/service_url').'/getprice.pgm?itemnumber='.$itemNumber.'&accountnumber='.$accountNumber.'&postalcode='.$postalCode.'&orderquantity='.$qty;
 	}
 	
 	public function getPostCode(){
@@ -36,7 +36,7 @@ class Wagento_Cart_Helper_Data extends Mage_Core_Helper_Abstract
 		foreach ($cart->getQuote()->getAllItems() as $item) {
 			$itemTaxPercent =  0;
 			if($item->getData('wagento_tax_fee') != ''){
-				$itemTaxPercent =  $item->getData('wagento_tax_fee');
+				$itemTaxPercent =  $item->getData('wagento_tax_fee')/100;
 			}
 			else{
 				$itemTaxPercent = $this->getMagentoTaxRate($item);
@@ -78,7 +78,7 @@ class Wagento_Cart_Helper_Data extends Mage_Core_Helper_Abstract
 		return Mage::getStoreConfig('carriers/wagento_shipping/default_shipping_product_fee');
 	}
 	
-	public function parserData($product){
+	public function parserData($product,$qty=1){
 		//$product = $quoteItem->getProduct();
 		$itemNumber = $product->getSku();
 		$postCode = Mage::helper('wagentocart')->getPostCode();
@@ -86,8 +86,8 @@ class Wagento_Cart_Helper_Data extends Mage_Core_Helper_Abstract
 			$postCode = Mage::helper('wagentocart')->getDefaultPostCode();
 		}
 		//die($itemNumber);
-		$accountNumber = Mage::helper('customer')->getCustomer()->getWagentoAccountNumber();
-		$url = Mage::helper('wagentocart')->getPriceServiceUrl($itemNumber,$accountNumber,$postCode);
+		$accountNumber = Mage::helper('customer')->getCustomer()->getId();
+		$url = Mage::helper('wagentocart')->getPriceServiceUrl($itemNumber,$accountNumber,$postCode,$qty);
 		//echo $url;
 		$this->log('webservice request',$url);
 		//die($url);
