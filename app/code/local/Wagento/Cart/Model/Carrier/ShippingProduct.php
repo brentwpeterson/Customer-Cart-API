@@ -17,24 +17,23 @@ class Wagento_Cart_Model_Carrier_ShippingProduct extends Mage_Shipping_Model_Car
             return false;
 
         $result = Mage::getModel('shipping/rate_result');
-        $handling = 0;
-        if(Mage::getStoreConfig('carriers/'.$this->_code.'/handling') >0)
-            $handling = Mage::getStoreConfig('carriers/'.$this->_code.'/handling');
-        if(Mage::getStoreConfig('carriers/'.$this->_code.'/handling_type') == 'P' && $request->getPackageValue() > 0)
-            $handling = $request->getPackageValue()*$handling;
 
-        $method = Mage::getModel('shipping/rate_result_method');
-        $method->setCarrier($this->_code);
-        $method->setCarrierTitle(Mage::getStoreConfig('carriers/'.$this->_code.'/title'));
-        /* Use method name */
-        $method->setMethod('wagento_shipping');
-        $method->setMethodTitle(Mage::getStoreConfig('carriers/'.$this->_code.'/methodtitle'));
+        
+		$rates = $this->getAllShippingRates($request);
 		
-		$shippingFee = $this->getShippingFee();
-		
-        $method->setCost($shippingFee);
-        $method->setPrice($shippingFee);
-        $result->append($method);
+		foreach($rates as $rate){
+			$method = Mage::getModel('shipping/rate_result_method');
+			$method->setCarrier($this->_code);
+            $method->setCarrierTitle($this->getConfigData('title'));
+			/* Use method name */
+			$method->setMethod($rate['method']);
+			$method->setMethodTitle($rate['method_title']);
+			
+			
+			$method->setCost($rate['cost']);
+			$method->setPrice($rate['price']);
+			$result->append($method);
+		}
         return $result; // it doesnt do anything if there was an error just returns blank - maybe there should be a default shipping incase of problem? or email sysadmin?
     }
 	
@@ -55,5 +54,113 @@ class Wagento_Cart_Model_Carrier_ShippingProduct extends Mage_Shipping_Model_Car
 		}
 		return $shippingFee;
 	}
+	
+	public function getAllShippingRates($request){
+		$cart = Mage::helper('checkout/cart')->getCart()->getQuote();
+		$rates = array();
+		$accountNumber = Mage::helper('customer')->getCustomer()->getId();
+		$orderquantity = 3;
+		
+		$postcode = Mage::helper('wagentocart')->getPostCode();
+		if(empty($postcode)){
+			$postcode = Mage::helper('wagentocart')->getDefaultPostCode();
+		}
+		$orderweight = $this->getTotalWeight($request);
+		$pricecode = '';
+		$orderamount = $this->getOrderAmount($request);
+		$promotion = '';
+		$ordernumber = 1;
+		$outputmode = 'XML' ;
+		
+		$params = array(
+			'itemnumber'=> 'SHIPPING',
+			'accountnumber'=> $accountNumber,
+			'orderquantity'=> $orderquantity,
+			'orderweight'=> $orderweight,
+			'postalcode'=>$postcode,
+			'pricecode'=> $pricecode,
+			'orderamount'=> $orderamount,
+			'promotion'=> $promotion,
+			'ordernumber'=> $ordernumber,
+			'outputmode'=> $outputmode
+		);
+		
+		try{
+			$uriRequest = Mage::helper('wagentocart')->getShippingRequestUrl($params);
+			Mage::helper('wagentocart')->log('Shipping Uri',$uriRequest);
+			
+			$content = file_get_contents($uriRequest);
+			
+			Mage::helper('wagentocart')->log('Shipping Response ',$content);
+			
+			$xml = simplexml_load_string($content);
+
+			$rates['freight1DayNoTax'] = array(
+				'method' => 'freight1DayNoTax',
+				'method_title' => 'Next Day Air',
+				'cost' => $xml->freightdata->freight1DayNoTax,
+				'price' => $xml->freightdata->freight1DayNoTax,
+			);
+			
+			$rates['freight2DayNoTax'] = array(
+				'method' => 'freight2DayNoTax',
+				'method_title' => '2nd Day Air',
+				'cost' => $xml->freightdata->freight2DayNoTax,
+				'price' => $xml->freightdata->freight2DayNoTax,
+			);
+			
+			$rates['freightGrndNoTax'] = array(
+				'method' => 'freightGrndNoTax',
+				'method_title' => 'Ground',
+				'cost' => $xml->freightdata->freightGrndNoTax,
+				'price' => $xml->freightdata->freightGrndNoTax,
+			);
+			
+		}
+		catch(Exception $e){
+			Mage::helper('wagentocart')->log('Shipping Error ',$e->getMessage());
+		}
+		
+		if(empty($rates)){
+			
+			$rates['standard'] = array(
+				'method' => 'standard',
+				'method_title' => 'Standard',
+				'cost' => Mage::helper('wagentocart')->getDefaultShippingProductFee(),
+				'price' => Mage::helper('wagentocart')->getDefaultShippingProductFee(),
+			);
+		
+		}
+		
+		return $rates;
+		
+	}
+	
+	public function getOrderAmount($request){
+ 		$orderAmount = 0;
+ 		if ($request->getAllItems()) {
+	 		foreach($request->getAllItems() as $item)
+	 		{
+				$orderAmount += floatval($item->getRowTotal());	 			
+	 		}
+ 		}
+ 		return $orderAmount;
+ 	}
+	
+	public function getTotalWeight($request){
+		
+		return $request->getPackageWeight();
+		$totalWeight = 0;
+ 		if ($request->getAllItems()) {
+	 		foreach($request->getAllItems() as $item)
+	 		{
+				$totalWeight += floatval($item->getRowWeight());	 	
+				
+	 		}
+ 		}
+ 		return $totalWeight;
+	
+	}
+	
 }
 ?>

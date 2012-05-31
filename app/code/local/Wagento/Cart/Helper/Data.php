@@ -126,7 +126,14 @@ class Wagento_Cart_Helper_Data extends Mage_Core_Helper_Abstract
 		}
 		
 	}
-	protected function log($name ='' , $data){
+	
+	public function getShippingRequestUrl($params){
+		$queryStr = http_build_query($params, '', '&');
+		$urlRequest = Mage::getStoreConfig('wagentocart/general/service_url').'/getprice.pgm?'.$queryStr;
+		return $urlRequest;
+	}
+	
+	public function log($name ='' , $data){
 	
 		Mage::log("--------------------". $name . "------------------------------------\n" . print_r($data, true),null,'wagento.log');
 	
