@@ -94,26 +94,31 @@ class Wagento_Cart_Model_Carrier_ShippingProduct extends Mage_Shipping_Model_Car
 			Mage::helper('wagentocart')->log('Shipping Response ',$content);
 			
 			$xml = simplexml_load_string($content);
-
-			$rates['freight1DayNoTax'] = array(
-				'method' => 'freight1DayNoTax',
+			
+			$freight1DayFee = floatval($xml->freightdata->freight1DayValue) + floatval($xml->freightdata->freight1DayTax);
+			
+			$rates['freight1Day'] = array(
+				'method' => 'freight1Day',
 				'method_title' => 'Next Day Air',
-				'cost' => $xml->freightdata->freight1DayNoTax,
-				'price' => $xml->freightdata->freight1DayNoTax,
+				'cost' => $freight1DayFee,
+				'price' => $freight1DayFee,
 			);
 			
-			$rates['freight2DayNoTax'] = array(
-				'method' => 'freight2DayNoTax',
+			$freight2DayFee = floatval($xml->freightdata->freight2DayValue) + floatval($xml->freightdata->freight2DayTax);
+			
+			$rates['freight2Day'] = array(
+				'method' => 'freight2Day',
 				'method_title' => '2nd Day Air',
-				'cost' => $xml->freightdata->freight2DayNoTax,
-				'price' => $xml->freightdata->freight2DayNoTax,
+				'cost' => $freight2DayFee,
+				'price' => $freight2DayFee,
 			);
 			
-			$rates['freightGrndNoTax'] = array(
-				'method' => 'freightGrndNoTax',
+			$freightGrndFee = floatval($xml->freightdata->freightGrndValue) + floatval($xml->freightdata->freightGrndTax);
+			$rates['freightGrnd'] = array(
+				'method' => 'freightGrnd',
 				'method_title' => 'Ground',
-				'cost' => $xml->freightdata->freightGrndNoTax,
-				'price' => $xml->freightdata->freightGrndNoTax,
+				'cost' => $freightGrndFee,
+				'price' => $freightGrndFee,
 			);
 			
 		}
