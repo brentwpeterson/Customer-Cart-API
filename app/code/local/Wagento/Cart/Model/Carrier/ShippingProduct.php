@@ -95,31 +95,37 @@ class Wagento_Cart_Model_Carrier_ShippingProduct extends Mage_Shipping_Model_Car
 			
 			$xml = simplexml_load_string($content);
 			
-			$freight1DayFee = floatval($xml->freightdata->freight1DayValue) + floatval($xml->freightdata->freight1DayTax);
-			
+			$freight1DayFee = floatval($xml->freightdata->freight1DayValue);
+			$freight1DayTaxFee = floatval($xml->freightdata->freight1DayTax);
 			$rates['freight1Day'] = array(
 				'method' => 'freight1Day',
 				'method_title' => 'Next Day Air',
-				'cost' => $freight1DayFee,
+				'tax' => $freight1DayTaxFee,
 				'price' => $freight1DayFee,
+				'cost' => $freight1DayFee
 			);
 			
-			$freight2DayFee = floatval($xml->freightdata->freight2DayValue) + floatval($xml->freightdata->freight2DayTax);
-			
+			$freight2DayFee = floatval($xml->freightdata->freight2DayValue);
+			$freight2DayTaxFee = floatval($xml->freightdata->freight2DayTax);
 			$rates['freight2Day'] = array(
 				'method' => 'freight2Day',
 				'method_title' => '2nd Day Air',
-				'cost' => $freight2DayFee,
+				'tax' => $freight2DayTaxFee,
 				'price' => $freight2DayFee,
+				'cost' => $freight2DayFee
 			);
 			
-			$freightGrndFee = floatval($xml->freightdata->freightGrndValue) + floatval($xml->freightdata->freightGrndTax);
+			$freightGrndFee = floatval($xml->freightdata->freightGrndValue);
+			$freightGrndTaxFee = floatval($xml->freightdata->freightGrndTax);
 			$rates['freightGrnd'] = array(
 				'method' => 'freightGrnd',
 				'method_title' => 'Ground',
-				'cost' => $freightGrndFee,
+				'tax' => $freightGrndTaxFee,
 				'price' => $freightGrndFee,
+				'cost' => $freightGrndFee,
 			);
+			
+			Mage::getSingleton('core/session')->setCurrentShippingRates($rates);
 			
 		}
 		catch(Exception $e){

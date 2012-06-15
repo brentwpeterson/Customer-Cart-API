@@ -83,9 +83,11 @@
 			</checkout>
 			<tax>
 				<rewrite>
-					<calculation>Wagento_Cart_Model_Override_Tax_Calculation</calculation>
+					<!--calculation>Wagento_Cart_Model_Override_Tax_Calculation</calculation-->
+					<sales_total_quote_tax>Wagento_Cart_Model_Override_Tax_Sales_Total_Quote_Tax</sales_total_quote_tax>
 				</rewrite>
 			</tax>
+			
 			<!--
 			<catalog>
 				<rewrite>
@@ -100,11 +102,11 @@
                 <class>Wagento_Cart_Block</class>
             </wagentocart>
 			
-			<checkout>			
+			<!--checkout>			
 				<rewrite>
 					<cart_totals>Wagento_Cart_Block_Cart_Totals</cart_totals>
 				</rewrite>
-			</checkout>
+			</checkout-->
         </blocks>
 		<resources>
             <wagentocart_setup>
